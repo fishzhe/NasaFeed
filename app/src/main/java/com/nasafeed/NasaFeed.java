@@ -23,7 +23,9 @@ public class NasaFeed extends AppCompatActivity {
 
         protected  Void doInBackground(IotHandler... handlers) {
             final IotHandler handler = handlers[0];
+
             handler.processFeed();
+            // UI should be updated in this thread.
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
