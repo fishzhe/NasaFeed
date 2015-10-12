@@ -2,6 +2,7 @@ package com.nasafeed;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.Display;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
