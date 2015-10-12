@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">NasaFeed</string>
+
+    <string name="test_image_title">
+        Decorating the Sky
+    </string>
+
+    <string name="test_image_date">
+        Sun, 10/11/ 2015
+    </string>
+    <string name="test_image_description">
+        This is a NASA Daily feed image description test.
+    </string>
+</resources>
