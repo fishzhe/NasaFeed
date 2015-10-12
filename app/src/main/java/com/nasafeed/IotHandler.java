@@ -61,7 +61,6 @@ public class IotHandler {
 
     private Bitmap getBitmap(String url) {
         try {
-            // TODO : Bitmap too large to be uploaded into a texture
             HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
             connection.setDoInput(true);
             connection.connect();
