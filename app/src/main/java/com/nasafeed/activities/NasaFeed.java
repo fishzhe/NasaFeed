@@ -1,10 +1,9 @@
-package com.nasafeed;
+package com.nasafeed.activities;
 
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
@@ -13,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.os.Handler;
 import android.widget.Toast;
+
+import com.nasafeed.R;
+import com.nasafeed.handlers.IotHandler;
 
 import java.io.IOException;
 
@@ -67,7 +69,10 @@ public class NasaFeed extends AppCompatActivity {
                 this,
                 "Loading",
                 "Loading the image of the Day");
-        final IotHandler iotHandler = new IotHandler();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        final IotHandler iotHandler = new IotHandler(size);
         Thread thread = new Thread() {
             public void run() {
                 iotHandler.processFeed();
@@ -113,12 +118,6 @@ public class NasaFeed extends AppCompatActivity {
         dateView.setText(date);
         if (image != null) {
             ImageView imageView = (ImageView) findViewById(R.id.imageDisplay);
-            // rescale image
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            float sacleHt = (float) size.x / image.getWidth();
-            image = Bitmap.createScaledBitmap(image, size.x, (int) (image.getWidth() * sacleHt), true);
             imageView.setImageBitmap(image);
         }
 

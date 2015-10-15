@@ -1,8 +1,10 @@
-package com.nasafeed;
+package com.nasafeed.handlers;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.view.Display;
+import android.graphics.Point;
+
+import com.nasafeed.utils.LoadImageUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -10,12 +12,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.jar.Attributes;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,7 +37,12 @@ public class IotHandler {
     private String title = null;
     private String description = null;
     private String date = null;
+    private Point imageSize;
 
+    public IotHandler(){}
+    public IotHandler(Point size){
+        this.imageSize = size;
+    }
     public void processFeed() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -64,9 +71,13 @@ public class IotHandler {
             HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
             connection.setDoInput(true);
             connection.connect();
-            InputStream inputStream = connection.getInputStream();
-
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+            Bitmap bitmap = null;
+            if (this.imageSize == null) {
+                bitmap = BitmapFactory.decodeStream(inputStream);
+            } else {
+                bitmap = LoadImageUtils.decodeSampledBitmapFromStream(inputStream, null, imageSize.x, imageSize.y);
+            }
             inputStream.close();
 
             return bitmap;
