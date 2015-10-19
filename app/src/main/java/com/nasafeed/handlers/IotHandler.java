@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 
+import com.nasafeed.domain.ImageContainer;
 import com.nasafeed.utils.LoadImageUtils;
 
 import org.w3c.dom.Document;
@@ -18,6 +19,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,26 +31,21 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class IotHandler {
     private String url = "http://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss";
-    private boolean inUrl = false;
-    private boolean inTitle = false;
-    private boolean inDescription = false;
-    private boolean inItem = false;
-    private boolean inDate = false;
-    private Bitmap image = null;
-    private String title = null;
-    private String description = null;
-    private String date = null;
+    private List<ImageContainer> images;
     private Point imageSize;
 
-    public IotHandler(){}
-    public IotHandler(Point size){
+    public IotHandler() {
+    }
+
+    public IotHandler(Point size) {
         this.imageSize = size;
     }
+
     public void processFeed() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         try {
-            builder  = factory.newDocumentBuilder();
+            builder = factory.newDocumentBuilder();
             InputStream inputStream = new URL(url).openStream();
             Document doc = builder.parse(inputStream);
             doc.getDocumentElement().normalize();
@@ -66,18 +64,31 @@ public class IotHandler {
 
     }
 
+    private void read(NodeList nodeList) {
+        images = new ArrayList<ImageContainer>();
+//nodeList.getLength() / 10
+        for (int i = 0; i < 2; i++) {
+            Node node = nodeList.item(i);
+            Element element = (Element) node;
+            Element source = (Element)element.getElementsByTagName("enclosure").item(0);
+            Bitmap image = getBitmap(source.getAttribute("url"));
+            ImageContainer imageContainer= new ImageContainer();
+            imageContainer.setImage(image);
+            imageContainer.setDescription(element.getElementsByTagName("description").item(0).getTextContent());
+            imageContainer.setPubDate(element.getElementsByTagName("pubDate").item(0).getTextContent());
+            imageContainer.setTitle(element.getElementsByTagName("title").item(0).getTextContent());
+            images.add(imageContainer);
+        }
+    }
+
     private Bitmap getBitmap(String url) {
         try {
-            HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setDoInput(true);
             connection.connect();
             InputStream inputStream = new BufferedInputStream(connection.getInputStream());
             Bitmap bitmap = null;
-            if (this.imageSize == null) {
-                bitmap = BitmapFactory.decodeStream(inputStream);
-            } else {
-                bitmap = LoadImageUtils.decodeSampledBitmapFromStream(inputStream, null, imageSize.x, imageSize.y);
-            }
+            bitmap = LoadImageUtils.decodeSampledBitmapFromStream(inputStream, null, imageSize.x, imageSize.y);
             inputStream.close();
 
             return bitmap;
@@ -87,29 +98,7 @@ public class IotHandler {
         }
     }
 
-    public void read(NodeList nodeList) {
-        Node node = nodeList.item(0);
-        Element element = (Element)node;
-        Element source = (Element) element.getElementsByTagName("enclosure").item(0);
-        image = getBitmap(source.getAttribute("url"));
-        title = element.getElementsByTagName("title").item(0).getTextContent();
-        description = element.getElementsByTagName("description").item(0).getTextContent();
-        date = element.getElementsByTagName("pubDate").item(0).getTextContent();
-    }
-
-    public Bitmap getImage() {
-        return image;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getDate() {
-        return date;
+    public List<ImageContainer> getImages() {
+        return images;
     }
 }

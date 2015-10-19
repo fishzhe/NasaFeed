@@ -12,16 +12,17 @@ import java.net.HttpURLConnection;
 
 /**
  * Created by Zhe Yu on 2015/10/14.
- *
+ * <p/>
  * refer to: http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
  */
 public class LoadImageUtils {
     public static Bitmap decodeSampledBitmapFromStream(InputStream inputStream, Rect rect,
-                                                         int reqWidth, int reqHeight) throws IOException {
+                                                       int reqWidth, int reqHeight) throws IOException {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
+        // decodeStream method will consume data, then the second decodeStream @ line35 wont work
         byte[] imageData = streamToArray(inputStream);
         BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
 
@@ -36,17 +37,19 @@ public class LoadImageUtils {
         return bitmap;
     }
 
+    // convert inputStream to byte array
     public static byte[] streamToArray(InputStream inputStream) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
-        while ((len = inputStream.read(buffer, 0, buffer.length))> 0){
+        while ((len = inputStream.read(buffer, 0, buffer.length)) > 0) {
             baos.write(buffer, 0, len);
         }
         byte[] imageData = baos.toByteArray();
         baos.close();
         return imageData;
     }
+
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image

@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.os.Handler;
 import android.widget.Toast;
 
 import com.nasafeed.R;
+import com.nasafeed.adapters.ImageFeedAdapter;
 import com.nasafeed.handlers.IotHandler;
 
 import java.io.IOException;
@@ -21,12 +23,17 @@ import java.io.IOException;
 public class NasaFeed extends AppCompatActivity {
     Handler handler;
     Bitmap image;
+    ImageFeedAdapter imageFeedAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nasa_feed);
         handler = new Handler();
+        ListView imageContainerView = (ListView)findViewById(R.id.image_container_list_view);
+
+        imageFeedAdapter = new ImageFeedAdapter();
+        imageContainerView.setAdapter(imageFeedAdapter);
         refreshFromFeed();
     }
 
@@ -36,33 +43,33 @@ public class NasaFeed extends AppCompatActivity {
     }
 
     // click method for Set Wallpaper button
-    public void onSetWallpaper(View view) {
-        Thread thread = new Thread() {
-            public void run() {
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(NasaFeed.this);
-                try {
-                    wallpaperManager.setBitmap(image);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
-
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(NasaFeed.this, "Error setting wallpaper", Toast.LENGTH_SHORT).show();
-
-                        }
-                    });
-                }
-            }
-        };
-        thread.start();
-    }
+//    public void onSetWallpaper(View view) {
+//        Thread thread = new Thread() {
+//            public void run() {
+//                WallpaperManager wallpaperManager = WallpaperManager.getInstance(NasaFeed.this);
+//                try {
+//                    wallpaperManager.setBitmap(image);
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
+//
+//                        }
+//                    });
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(NasaFeed.this, "Error setting wallpaper", Toast.LENGTH_SHORT).show();
+//
+//                        }
+//                    });
+//                }
+//            }
+//        };
+//        thread.start();
+//    }
 
     public void refreshFromFeed() {
         final ProgressDialog dialog = ProgressDialog.show(
@@ -76,20 +83,18 @@ public class NasaFeed extends AppCompatActivity {
         Thread thread = new Thread() {
             public void run() {
                 iotHandler.processFeed();
-                image = iotHandler.getImage();
-                handler.post(new Runnable() {
+                imageFeedAdapter.setImages(iotHandler.getImages());
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        resetDisplay(iotHandler.getTitle(),
-                                iotHandler.getDate(),
-                                iotHandler.getImage(),
-                                iotHandler.getDescription().toString());
+                        imageFeedAdapter.notifyDataSetChanged();
                         dialog.dismiss();
                     }
                 });
             }
         };
         thread.start();
+
     }
 
     /*
@@ -110,18 +115,18 @@ public class NasaFeed extends AppCompatActivity {
         }
     }
     */
-    public void resetDisplay(String title, String date, Bitmap image, String description) {
-        TextView titleView = (TextView) findViewById(R.id.imageTitle);
-        titleView.setText(title);
-
-        TextView dateView = (TextView) findViewById(R.id.imageDate);
-        dateView.setText(date);
-        if (image != null) {
-            ImageView imageView = (ImageView) findViewById(R.id.imageDisplay);
-            imageView.setImageBitmap(image);
-        }
-
-        TextView descriptionView = (TextView) findViewById(R.id.imageDescription);
-        descriptionView.setText(description);
-    }
+//    public void resetDisplay(String title, String date, Bitmap image, String description) {
+//        TextView titleView = (TextView) findViewById(R.id.imageTitle);
+//        titleView.setText(title);
+//
+//        TextView dateView = (TextView) findViewById(R.id.imageDate);
+//        dateView.setText(date);
+//        if (image != null) {
+//            ImageView imageView = (ImageView) findViewById(R.id.imageDisplay);
+//            imageView.setImageBitmap(image);
+//        }
+//
+//        TextView descriptionView = (TextView) findViewById(R.id.imageDescription);
+//        descriptionView.setText(description);
+//    }
 }
