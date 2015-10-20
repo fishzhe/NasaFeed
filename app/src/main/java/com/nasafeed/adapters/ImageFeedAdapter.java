@@ -27,9 +27,11 @@ import java.util.List;
 public class ImageFeedAdapter extends BaseAdapter{
     private List<ImageContainer> images = new ArrayList<ImageContainer>();
 
-    public ImageFeedAdapter(){}
+    public ImageFeedAdapter(){
+        selected = 0;
+    }
 
-    private int selected = -1;
+    private int selected;
     @Override
     public int getCount() {
         return images.size();
@@ -71,14 +73,17 @@ public class ImageFeedAdapter extends BaseAdapter{
 
     public void setSelectedItemBackground(View view, AdapterView parent, int position) {
         view.setBackgroundColor(Color.GRAY);
-        if (selected != -1) {
+        // if current selected image no equals previous selected,
+        // then set previous as white
+        if (selected != position) {
             parent.getChildAt(selected).setBackgroundColor(Color.WHITE);
         }
         selected = position;
     }
-    // if have selected image return it, otherwise return first
+    // if have selected default value is 0, which means if no one is selected, the first one will
+    // be set as wallpaper as default.
     public Object getSelectedItem(){
-        return (selected != -1 ? images.get(selected) : images.get(0));
+        return images.get(selected);
     }
 
     public List<ImageContainer> getImages() {
