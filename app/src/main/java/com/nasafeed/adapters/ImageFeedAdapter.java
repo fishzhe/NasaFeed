@@ -1,10 +1,12 @@
 package com.nasafeed.adapters;
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class ImageFeedAdapter extends BaseAdapter{
 
     public ImageFeedAdapter(){}
 
+    private int selected = -1;
     @Override
     public int getCount() {
         return images.size();
@@ -64,6 +67,18 @@ public class ImageFeedAdapter extends BaseAdapter{
         description.setText(image.getDescription());
 
         return convertView;
+    }
+
+    public void setSelectedItemBackground(View view, AdapterView parent, int position) {
+        view.setBackgroundColor(Color.GRAY);
+        if (selected != -1) {
+            parent.getChildAt(selected).setBackgroundColor(Color.WHITE);
+        }
+        selected = position;
+    }
+    // if have selected image return it, otherwise return first
+    public Object getSelectedItem(){
+        return (selected != -1 ? images.get(selected) : images.get(0));
     }
 
     public List<ImageContainer> getImages() {
