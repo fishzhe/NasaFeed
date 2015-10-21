@@ -73,6 +73,7 @@ public class ImageFeedAdapter extends BaseAdapter {
         // should resize the image with device size.
         Picasso.with(parent.getContext())
                 .load(imageInfo.getUrl())
+                .placeholder(R.drawable.loading)
                 .resize(this.size.y, this.size.x)
                 .centerInside()
                 .into(imageView);

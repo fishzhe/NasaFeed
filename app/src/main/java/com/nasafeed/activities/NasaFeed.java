@@ -96,7 +96,6 @@ public class NasaFeed extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //imageFeedAdapter.notify();
                         imageFeedAdapter.notifyDataSetChanged();
                         dialog.dismiss();
                     }
