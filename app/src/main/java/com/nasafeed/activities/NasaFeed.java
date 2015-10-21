@@ -5,13 +5,13 @@ import android.app.WallpaperManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.os.Handler;
 import android.widget.Toast;
@@ -58,46 +58,9 @@ public class NasaFeed extends AppCompatActivity {
 
     // click method for Set Wallpaper button
     public void onSetWallpaper(View view) {
-                final WallpaperManager wallpaperManager = WallpaperManager.getInstance(NasaFeed.this);
-
-                ImageInfo imageInfo = (ImageInfo)imageFeedAdapter.getSelectedItem();
-                //Bitmap image = imageInfo.getImage();
-                Target t = new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        try {
-                            Log.d("setBitmap", "" + bitmap.getHeight());
-                            wallpaperManager.setBitmap(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(NasaFeed.this, "Error setting wallpaper", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                };
-                Picasso.with(getApplicationContext()).load(imageInfo.getUrl()).into(t);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
+        ImageInfo imageInfo = (ImageInfo)imageFeedAdapter.getSelectedItem();
+        SetWallpaperTask task = new SetWallpaperTask();
+        task.execute(imageInfo);
     }
 
     public void refreshFromFeed() {
@@ -128,6 +91,53 @@ public class NasaFeed extends AppCompatActivity {
 
     }
 
+    class SetWallpaperTask extends AsyncTask<ImageInfo, Void, Void> {
+
+        @Override
+        protected Void doInBackground(ImageInfo... params) {
+            final WallpaperManager wallpaperManager = WallpaperManager.getInstance(NasaFeed.this);
+
+            final ImageInfo imageInfo = params[0];
+            //Bitmap image = imageInfo.getImage();
+            final Target t = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    try {
+                        Log.d("setBitmap", "" + bitmap.getHeight());
+                        wallpaperManager.setBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(NasaFeed.this, "Error setting wallpaper", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            };
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Picasso.with(getApplicationContext()).load(imageInfo.getUrl()).into(t);
+                    Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            return null;
+        }
+    }
     /*
     class RetriveRssFeed extends AsyncTask<IotHandler, Void, Void> {
 
