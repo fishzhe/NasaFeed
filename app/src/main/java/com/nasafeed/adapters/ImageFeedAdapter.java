@@ -23,11 +23,12 @@ import java.util.List;
 public class ImageFeedAdapter extends BaseAdapter {
     private List<ImageInfo> imageInfos;
     private Point size;
-
+    private View previous;
     public ImageFeedAdapter() {
         selected = 0;
         size = null;
         imageInfos = new ArrayList<>();
+        previous = null;
     }
 
     public void setSize(Point size) {
@@ -83,19 +84,19 @@ public class ImageFeedAdapter extends BaseAdapter {
     }
 
     public void setSelectedItemBackground(View view, AdapterView parent, int position) {
-        view.setBackgroundColor(Color.GRAY);
-        // if current selected image no equals previous selected,
-        // then set previous as white
-        if (selected != position) {
-            parent.getChildAt(selected).setBackgroundColor(Color.WHITE);
+        if (previous != null) {
+            previous.setBackgroundColor(Color.WHITE);
         }
-        selected = position;
+        if (view != null) {
+            view.setBackgroundColor(Color.GRAY);
+        }
+        previous = view;
     }
 
     // if have selected default value is 0, which means if no one is selected, the first one will
     // be set as wallpaper as default.
     public Object getSelectedItem() {
-        return imageInfos.get(selected);
+        return previous;
     }
 
     public List<ImageInfo> getImageInfos() {

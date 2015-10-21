@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.os.Handler;
 import android.widget.Toast;
@@ -57,10 +60,23 @@ public class NasaFeed extends AppCompatActivity {
     }
 
     // click method for Set Wallpaper button
-    public void onSetWallpaper(View view) {
-        ImageInfo imageInfo = (ImageInfo)imageFeedAdapter.getSelectedItem();
-        SetWallpaperTask task = new SetWallpaperTask();
-        task.execute(imageInfo);
+    public void onSetWallpaper(View view){
+        LinearLayout linearLayout = (LinearLayout)imageFeedAdapter.getSelectedItem();
+        ImageView imageView = (ImageView)linearLayout.getChildAt(2);
+        Bitmap image = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+        try {
+            wallpaperManager.setBitmap(image);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(NasaFeed.this, "Wallpaper set error", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void refreshFromFeed() {
@@ -88,86 +104,5 @@ public class NasaFeed extends AppCompatActivity {
             }
         };
         thread.start();
-
     }
-
-    class SetWallpaperTask extends AsyncTask<ImageInfo, Void, Void> {
-
-        @Override
-        protected Void doInBackground(ImageInfo... params) {
-            final WallpaperManager wallpaperManager = WallpaperManager.getInstance(NasaFeed.this);
-
-            final ImageInfo imageInfo = params[0];
-            //Bitmap image = imageInfo.getImage();
-            final Target t = new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    try {
-                        Log.d("setBitmap", "" + bitmap.getHeight());
-                        wallpaperManager.setBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(NasaFeed.this, "Error setting wallpaper", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                }
-
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                }
-            };
-
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Picasso.with(getApplicationContext()).load(imageInfo.getUrl()).into(t);
-                    Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
-
-                }
-            });
-            return null;
-        }
-    }
-    /*
-    class RetriveRssFeed extends AsyncTask<IotHandler, Void, Void> {
-
-        protected  Void doInBackground(IotHandler... handlers) {
-            final IotHandler handler = handlers[0];
-
-            handler.processFeed();
-            // UI should be updated in this thread.
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-            return null;
-        }
-    }
-    */
-//    public void resetDisplay(String title, String date, Bitmap image, String description) {
-//        TextView titleView = (TextView) findViewById(R.id.imageTitle);
-//        titleView.setText(title);
-//
-//        TextView dateView = (TextView) findViewById(R.id.imageDate);
-//        dateView.setText(date);
-//        if (image != null) {
-//            ImageView imageView = (ImageView) findViewById(R.id.imageDisplay);
-//            imageView.setImageBitmap(image);
-//        }
-//
-//        TextView descriptionView = (TextView) findViewById(R.id.imageDescription);
-//        descriptionView.setText(description);
-//    }
 }
