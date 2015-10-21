@@ -4,41 +4,36 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
 
-        <ListView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical"
-            android:id="@+id/image_container_list_view"
-            android:divider="@color/colorAccent"
-            >
-        </ListView>
-    </ScrollView>
+    <ListView
+        android:id="@+id/image_container_list_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@color/colorAccent"
+        android:orientation="vertical"
+        android:layout_weight="1"></ListView>
+
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+        android:layout_weight="0"
         android:background="@color/buttonBar"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="5dp"
-        android:layout_weight="0">
+        android:padding="5dp">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/refresh_button"
             android:onClick="onRefresh"
-            />
+            android:text="@string/refresh_button" />
+
         <Button
-            android:text="@string/setwallpaper"
-            android:onClick="onSetWallpaper"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:onClick="onSetWallpaper"
+            android:text="@string/setwallpaper" />
     </LinearLayout>
 </LinearLayout>

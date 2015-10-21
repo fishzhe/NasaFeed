@@ -1,11 +1,17 @@
 package com.nasafeed.handlers;
 
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
-import com.nasafeed.domain.ImageContainer;
-import com.nasafeed.utils.LoadImageUtils;
+import com.nasafeed.domain.ImageInfo;
+import com.nostra13.universalimageloader.core.ImageLoader;
+//import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+//import com.nasafeed.utils.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,10 +19,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,14 +35,10 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class IotHandler {
     private String url = "http://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss";
-    private List<ImageContainer> images;
-    private Point imageSize;
+    private List<ImageInfo> imageInfos;
 
     public IotHandler() {
-    }
-
-    public IotHandler(Point size) {
-        this.imageSize = size;
+        imageInfos = new ArrayList<ImageInfo>();
     }
 
     public void processFeed() {
@@ -65,40 +65,23 @@ public class IotHandler {
     }
 
     private void read(NodeList nodeList) {
-        images = new ArrayList<ImageContainer>();
-//nodeList.getLength() / 10
-        for (int i = 0; i < 2; i++) {
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             Element element = (Element) node;
-            Element source = (Element)element.getElementsByTagName("enclosure").item(0);
-            Bitmap image = getBitmap(source.getAttribute("url"));
-            ImageContainer imageContainer= new ImageContainer();
-            imageContainer.setImage(image);
-            imageContainer.setDescription(element.getElementsByTagName("description").item(0).getTextContent());
-            imageContainer.setPubDate(element.getElementsByTagName("pubDate").item(0).getTextContent());
-            imageContainer.setTitle(element.getElementsByTagName("title").item(0).getTextContent());
-            images.add(imageContainer);
+            Element source = (Element) element.getElementsByTagName("enclosure").item(0);
+
+            ImageInfo imageInfo = new ImageInfo();
+            imageInfo.setUrl(source.getAttribute("url"));
+            imageInfo.setDescription(element.getElementsByTagName("description").item(0).getTextContent());
+            imageInfo.setPubDate(element.getElementsByTagName("pubDate").item(0).getTextContent());
+            imageInfo.setTitle(element.getElementsByTagName("title").item(0).getTextContent());
+
+            imageInfos.add(imageInfo);
         }
     }
 
-    private Bitmap getBitmap(String url) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream inputStream = new BufferedInputStream(connection.getInputStream());
-            Bitmap bitmap = null;
-            bitmap = LoadImageUtils.decodeSampledBitmapFromStream(inputStream, null, imageSize.x, imageSize.y);
-            inputStream.close();
-
-            return bitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public List<ImageContainer> getImages() {
-        return images;
+    public List<ImageInfo> getImageInfos() {
+        return this.imageInfos;
     }
 }

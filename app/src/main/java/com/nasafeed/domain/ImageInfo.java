@@ -5,32 +5,32 @@ import android.graphics.Bitmap;
 /**
  * Created by Zhe Yu on 2015/10/18.
  */
-public class ImageContainer {
-    private Bitmap image;
+public class ImageInfo {
+    private String url;
     private String title;
     private String pubDate;
     private String description;
 
-    public ImageContainer() {
-        image = null;
+    public ImageInfo() {
+        url = "";
         title = "";
         pubDate = "";
         description = "";
     }
 
-    public ImageContainer(Bitmap image, String title, String pubDate, String description) {
-        this.image = image;
+    public ImageInfo(String url, String title, String pubDate, String description) {
+        this.url = url;
         this.title = title;
         this.pubDate = pubDate;
         this.description = description;
     }
 
-    public Bitmap getImage() {
-        return image;
+    public String getUrl() {
+        return url;
     }
 
-    public void setImage(Bitmap image) {
-        this.image = image;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getTitle() {
