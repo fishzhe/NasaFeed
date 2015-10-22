@@ -3,14 +3,17 @@ package com.nasafeed.activities;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -33,7 +36,7 @@ import java.io.IOException;
 public class NasaFeed extends AppCompatActivity {
     Handler handler;
     ImageFeedAdapter imageFeedAdapter;
-
+    ListView imageContainerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,16 +44,20 @@ public class NasaFeed extends AppCompatActivity {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(config);
         handler = new Handler();
-        final ListView imageContainerView = (ListView)findViewById(R.id.image_container_list_view);
+        imageContainerView = (ListView)findViewById(R.id.image_container_list_view);
 
         imageFeedAdapter = new ImageFeedAdapter();
         imageContainerView.setAdapter(imageFeedAdapter);
-        imageContainerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // long click to set wall paper
+        imageContainerView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                imageFeedAdapter.setSelectedItemBackground(view, parent, position);
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                onSetWallpaper(view);
+                return true;
             }
         });
+        // image view is in the 2 position of container(title, data, image, description)
+
         refreshFromFeed();
     }
 
@@ -61,22 +68,27 @@ public class NasaFeed extends AppCompatActivity {
 
     // click method for Set Wallpaper button
     public void onSetWallpaper(View view){
-        LinearLayout linearLayout = (LinearLayout)imageFeedAdapter.getSelectedItem();
-        ImageView imageView = (ImageView)linearLayout.getChildAt(2);
-        Bitmap image = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
-        try {
-            wallpaperManager.setBitmap(image);
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(NasaFeed.this, "Wallpaper set error", Toast.LENGTH_SHORT).show();
+        // LinearLayout linearLayout = (LinearLayout)imageFeedAdapter.getSelectedItem();
+        if (view instanceof LinearLayout){
+            Log.d("view", "Is linear layout");
+            ImageView imageView = (ImageView)((LinearLayout)view).getChildAt(2);
+            Bitmap image = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+            WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+            try {
+                wallpaperManager.setBitmap(image);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(NasaFeed.this, "Wallpaper set", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(NasaFeed.this, "Wallpaper set error", Toast.LENGTH_SHORT).show();
+            }
         }
+        // image view is in the 2 position of container(title, data, image, description)
+
     }
 
     public void refreshFromFeed() {
@@ -103,5 +115,17 @@ public class NasaFeed extends AppCompatActivity {
             }
         };
         thread.start();
+       // setImageLongClickListener();
     }
+
+//    public void setImageLongClickListener(){
+//        View imageContainerView = findViewById(R.id.image_container_list_view);
+//        imageContainerView.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                onSetWallpaper(v);
+//                return true;
+//            }
+//        });
+//    }
 }

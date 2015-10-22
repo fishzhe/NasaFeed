@@ -84,21 +84,21 @@ public class ImageFeedAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setSelectedItemBackground(View view, AdapterView parent, int position) {
-        if (previous != null) {
-            previous.setBackgroundColor(Color.WHITE);
-        }
-        if (view != null) {
-            view.setBackgroundColor(Color.GRAY);
-        }
-        previous = view;
-    }
-
-    // if have selected default value is 0, which means if no one is selected, the first one will
-    // be set as wallpaper as default.
-    public Object getSelectedItem() {
-        return previous;
-    }
+//    public void setSelectedItemBackground(View view, AdapterView parent, int position) {
+//        if (previous != null) {
+//            previous.setBackgroundColor(Color.WHITE);
+//        }
+//        if (view != null) {
+//            view.setBackgroundColor(Color.GRAY);
+//        }
+//        previous = view;
+//    }
+//
+//    // if have selected default value is 0, which means if no one is selected, the first one will
+//    // be set as wallpaper as default.
+//    public Object getSelectedItem() {
+//        return previous;
+//    }
 
     public List<ImageInfo> getImageInfos() {
         return imageInfos;
