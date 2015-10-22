@@ -1,17 +1,6 @@
 package com.nasafeed.handlers;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-
 import com.nasafeed.domain.ImageInfo;
-import com.nostra13.universalimageloader.core.ImageLoader;
-//import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-//import com.nasafeed.utils.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
