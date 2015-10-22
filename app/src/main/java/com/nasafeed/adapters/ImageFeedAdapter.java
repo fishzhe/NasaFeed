@@ -1,11 +1,9 @@
 package com.nasafeed.adapters;
 
-import android.graphics.Color;
 import android.graphics.Point;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,12 +21,10 @@ import java.util.List;
 public class ImageFeedAdapter extends BaseAdapter {
     private List<ImageInfo> imageInfos;
     private Point size;
-    private View previous;
     public ImageFeedAdapter() {
         selected = 0;
         size = null;
         imageInfos = new ArrayList<>();
-        previous = null;
     }
 
     public void setSize(Point size) {
@@ -83,22 +79,6 @@ public class ImageFeedAdapter extends BaseAdapter {
 
         return convertView;
     }
-
-//    public void setSelectedItemBackground(View view, AdapterView parent, int position) {
-//        if (previous != null) {
-//            previous.setBackgroundColor(Color.WHITE);
-//        }
-//        if (view != null) {
-//            view.setBackgroundColor(Color.GRAY);
-//        }
-//        previous = view;
-//    }
-//
-//    // if have selected default value is 0, which means if no one is selected, the first one will
-//    // be set as wallpaper as default.
-//    public Object getSelectedItem() {
-//        return previous;
-//    }
 
     public List<ImageInfo> getImageInfos() {
         return imageInfos;

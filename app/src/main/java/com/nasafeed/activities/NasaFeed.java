@@ -1,20 +1,14 @@
 package com.nasafeed.activities;
 
-import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -25,7 +19,6 @@ import android.widget.Toast;
 
 import com.nasafeed.R;
 import com.nasafeed.adapters.ImageFeedAdapter;
-import com.nasafeed.domain.ImageInfo;
 import com.nasafeed.handlers.IotHandler;
 
 import java.io.IOException;
@@ -51,20 +44,14 @@ public class NasaFeed extends AppCompatActivity {
                 return true;
             }
         });
-        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeContainer);
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshFromFeed();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
-        // image view is in the 2 position of container(title, data, image, description)
-
-        refreshFromFeed();
-    }
-
-    // click method for refresh button
-    public void onRefresh(View view) {
         refreshFromFeed();
     }
 
@@ -89,15 +76,10 @@ public class NasaFeed extends AppCompatActivity {
                 Toast.makeText(NasaFeed.this, "Wallpaper set error", Toast.LENGTH_SHORT).show();
             }
         }
-        // image view is in the 2 position of container(title, data, image, description)
-
     }
 
     public void refreshFromFeed() {
-        final ProgressDialog dialog = ProgressDialog.show(
-                this,
-                "Loading",
-                "Loading the image of the Day");
+
         Display display = getWindowManager().getDefaultDisplay();
         final Point size = new Point();
         display.getSize(size);
@@ -111,23 +93,10 @@ public class NasaFeed extends AppCompatActivity {
                     @Override
                     public void run() {
                         imageFeedAdapter.notifyDataSetChanged();
-                        dialog.dismiss();
                     }
                 });
             }
         };
         thread.start();
-       // setImageLongClickListener();
     }
-
-//    public void setImageLongClickListener(){
-//        View imageContainerView = findViewById(R.id.image_container_list_view);
-//        imageContainerView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                onSetWallpaper(v);
-//                return true;
-//            }
-//        });
-//    }
 }

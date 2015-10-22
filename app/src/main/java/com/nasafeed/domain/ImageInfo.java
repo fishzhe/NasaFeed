@@ -1,7 +1,5 @@
 package com.nasafeed.domain;
 
-import android.graphics.Bitmap;
-
 /**
  * Created by Zhe Yu on 2015/10/18.
  */
