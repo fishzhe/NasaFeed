@@ -9,7 +9,6 @@
         android:id="@+id/image_container_list_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:divider="@color/colorAccent"
         android:orientation="vertical"
         android:layout_weight="1"></ListView>
 
