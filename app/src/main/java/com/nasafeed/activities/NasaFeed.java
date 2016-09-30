@@ -37,6 +37,14 @@ public class NasaFeed extends AppCompatActivity {
         imageFeedAdapter = new ImageFeedAdapter();
         imageContainerView.setAdapter(imageFeedAdapter);
         // long click to set wall paper
+        imageContainerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                onShowImageInfo(view);
+                return;
+            }
+        });
+
         imageContainerView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -55,12 +63,19 @@ public class NasaFeed extends AppCompatActivity {
         refreshFromFeed();
     }
 
+    public void onShowImageInfo(View view) {
+        if (view instanceof LinearLayout) {
+            View imageInfoContainer = view.findViewById(R.id.image_info_container);
+            int visibility =
+                    imageInfoContainer.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE;
+            imageInfoContainer.setVisibility(visibility);
+        }
+    }
     // click method for Set Wallpaper button
     public void onSetWallpaper(View view){
-        // LinearLayout linearLayout = (LinearLayout)imageFeedAdapter.getSelectedItem();
         if (view instanceof LinearLayout){
             Log.d("view", "Is linear layout");
-            ImageView imageView = (ImageView)((LinearLayout)view).getChildAt(2);
+            ImageView imageView = (ImageView)((LinearLayout)view).getChildAt(0);
             Bitmap image = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
             WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
             try {
